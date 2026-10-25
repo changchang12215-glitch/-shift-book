@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F3F5F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F141B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}.wrap{padding-top:calc(8px + env(safe-area-inset-top,0px))!important}</style>
+<title>E3 輪班手帳</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="輪班手帳">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* 調色原則：月曆大面積只用同一明度的淺色底（每種狀態一組「底色／字色／重點色」），
+   飽和的橘色只留給按鈕與重點；假日用紅色小標籤，發薪日用彩虹框。 */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#EBEFF3; --ink:#1A2532; --muted:#66768A; --line:#E1E6EC;
+  --e3:#F26A2E; --e3-soft:#FFE6D8; --e3-ink:#FFFFFF; --e1:#3D6FF0; --e2:#13A085;
+  --red:#D93A4B; --rose:#C23A86; --gold:#E0A100; --gold-soft:#FFF4D2;
+  --ok:#17834A; --ok-soft:#DDF2E5; --warn:#A86600; --warn-soft:#FFF1D6;
+  --c-work:#FFE4D4; --c-work-ink:#5A2A12; --c-work-acc:#D9531A;
+  --c-ot:#D7EEFA; --c-ot-ink:#0F3F5A; --c-ot-acc:#1C86BF;
+  --c-swap:#E7E0FF; --c-swap-ink:#2E1F6B; --c-swap-acc:#6A4AE0; --c-swap-dash:#9B86F2;
+  --lv-annual:#FFF1BD; --lvt-annual:#4D3A00; --lva-annual:#A57A00;
+  --lv-comp:#D6F2E2; --lvt-comp:#11402A; --lva-comp:#1F8A55;
+  --lv-ritual:#E8F0CC; --lvt-ritual:#34400B; --lva-ritual:#6B8A12;
+  --lv-sick:#F5DDF0; --lvt-sick:#4A1640; --lva-sick:#A3368C;
+  --lv-personal:#E3E8EF; --lvt-personal:#26313F; --lva-personal:#56657A;
+  --lv-family:#F2E5CF; --lvt-family:#43321A; --lva-family:#94692A;
+  --lv-marriage:#FFDCE5; --lvt-marriage:#5A1528; --lva-marriage:#C23A5E;
+  --lv-funeral:#E4E1EC; --lvt-funeral:#2C2840; --lva-funeral:#5E5880;
+  --typh:rgba(19,160,133,.16);
+  --rainbow:linear-gradient(135deg,#FF7A8A,#FFC15E,#5FD69A,#55B8F0,#A88BFF);
+  --shadow:0 10px 30px rgba(26,37,50,.14);
+  --f-num:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Heiti TC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#171E27; --sunk:#121820; --ink:#E6ECF2; --muted:#93A1B1; --line:#26303C;
+  --e3:#FF7D45; --e3-soft:#3B2418; --e3-ink:#1A0E07; --e1:#7B9CFF; --e2:#34C7A5;
+  --red:#FF6B78; --rose:#EC6AB2; --gold:#FFC53A; --gold-soft:#36301A;
+  --ok:#47C985; --ok-soft:#15301F; --warn:#FFB54D; --warn-soft:#382A14;
+  --c-work:#3B2418; --c-work-ink:#FFD9C4; --c-work-acc:#FF8A50;
+  --c-ot:#12324A; --c-ot-ink:#CDEBFA; --c-ot-acc:#5CC0F0;
+  --c-swap:#2A2352; --c-swap-ink:#E1D9FF; --c-swap-acc:#A58CFF; --c-swap-dash:#8B74F0;
+  --lv-annual:#3A3212; --lvt-annual:#FFEFB0; --lva-annual:#F2C744;
+  --lv-comp:#14352A; --lvt-comp:#CFF3DF; --lva-comp:#4CCB8A;
+  --lv-ritual:#2C3414; --lvt-ritual:#E6F0C2; --lva-ritual:#A8C84A;
+  --lv-sick:#3A1C36; --lvt-sick:#F7D3EF; --lva-sick:#E070C8;
+  --lv-personal:#232C38; --lvt-personal:#D5DEE8; --lva-personal:#9AAABD;
+  --lv-family:#3A2E1C; --lvt-family:#F2E2C6; --lva-family:#D8A75A;
+  --lv-marriage:#3F1B27; --lvt-marriage:#FFD3DE; --lva-marriage:#FF7A9E;
+  --lv-funeral:#29263A; --lvt-funeral:#DEDAEA; --lva-funeral:#A59EC8;
+  --typh:rgba(52,199,165,.16);
+  --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171E27; --sunk:#121820; --ink:#E6ECF2; --muted:#93A1B1; --line:#26303C;
+  --e3:#FF7D45; --e3-soft:#3B2418; --e3-ink:#1A0E07; --e1:#7B9CFF; --e2:#34C7A5;
+  --red:#FF6B78; --rose:#EC6AB2; --gold:#FFC53A; --gold-soft:#36301A;
+  --ok:#47C985; --ok-soft:#15301F; --warn:#FFB54D; --warn-soft:#382A14;
+  --c-work:#3B2418; --c-work-ink:#FFD9C4; --c-work-acc:#FF8A50;
+  --c-ot:#12324A; --c-ot-ink:#CDEBFA; --c-ot-acc:#5CC0F0;
+  --c-swap:#2A2352; --c-swap-ink:#E1D9FF; --c-swap-acc:#A58CFF; --c-swap-dash:#8B74F0;
+  --lv-annual:#3A3212; --lvt-annual:#FFEFB0; --lva-annual:#F2C744;
+  --lv-comp:#14352A; --lvt-comp:#CFF3DF; --lva-comp:#4CCB8A;
+  --lv-ritual:#2C3414; --lvt-ritual:#E6F0C2; --lva-ritual:#A8C84A;
+  --lv-sick:#3A1C36; --lvt-sick:#F7D3EF; --lva-sick:#E070C8;
+  --lv-personal:#232C38; --lvt-personal:#D5DEE8; --lva-personal:#9AAABD;
+  --lv-family:#3A2E1C; --lvt-family:#F2E2C6; --lva-family:#D8A75A;
+  --lv-marriage:#3F1B27; --lvt-marriage:#FFD3DE; --lva-marriage:#FF7A9E;
+  --lv-funeral:#29263A; --lvt-funeral:#DEDAEA; --lva-funeral:#A59EC8;
+  --typh:rgba(52,199,165,.16);
+  --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--e1);outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px calc(150px + env(safe-area-inset-bottom,0px))}
+
+/* 頂部 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:10px 8px;display:flex;align-items:center;gap:10px}
+.mo{display:flex;align-items:baseline;gap:8px;flex:1;min-width:0}
+.mo b{font:800 34px/1 var(--f-num);letter-spacing:-.02em}
+.mo span{color:var(--muted);font-weight:500}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;font-size:18px;flex:none}
+.pillbtn{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:14px;flex:none}
+.seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:9px;font-weight:700;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-block:2px 10px}
+.legend{display:flex;gap:8px 10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+/* 月曆 */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.wd{text-align:center;font-size:12px;font-weight:700;color:var(--muted);padding-bottom:2px}
+.wd.sun,.wd.sat{color:var(--red)}
+.cell{--fill:var(--surface);--tx:var(--ink);--acc:var(--muted);position:relative;min-height:74px;border-radius:12px;border:1.5px solid var(--line);background:var(--fill);color:var(--tx);padding:5px 5px 6px;text-align:left;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.cell.out{visibility:hidden}
+.cell .d{font:700 18px/1 var(--f-num)}
+.cell .st{font-size:11px;font-weight:900;letter-spacing:.02em;color:var(--acc);white-space:nowrap;overflow:hidden}
+.cell.red .d{color:var(--red)}
+.cell.today{outline:2.5px solid var(--ink);outline-offset:1.5px}
+.cell .marks{margin-top:auto;display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.mk{font-size:9px;font-weight:900;line-height:1;padding:2px 3px;border-radius:4px;background:var(--surface);color:var(--acc)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.teams{display:flex;gap:2px;margin-top:auto}
+.teams span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.teams .on1{background:var(--e1)}.teams .on2{background:var(--e2)}.teams .on3{background:var(--e3)}
+/* 狀態：底色／字色／重點色一組 */
+.cell.work{--fill:var(--c-work);--tx:var(--c-work-ink);--acc:var(--c-work-acc);border-color:transparent}
+.cell.ot{--fill:var(--c-ot);--tx:var(--c-ot-ink);--acc:var(--c-ot-acc);border-color:transparent}
+.cell.swapW{--fill:var(--c-swap);--tx:var(--c-swap-ink);--acc:var(--c-swap-acc);border-color:transparent}
+.cell.swapO{--acc:var(--c-swap-acc);border:1.5px dashed var(--c-swap-dash)}
+.cell.lv{border-color:transparent}
+.cell.lv-annual{--fill:var(--lv-annual);--tx:var(--lvt-annual);--acc:var(--lva-annual)}
+.cell.lv-comp{--fill:var(--lv-comp);--tx:var(--lvt-comp);--acc:var(--lva-comp)}
+.cell.lv-ritual{--fill:var(--lv-ritual);--tx:var(--lvt-ritual);--acc:var(--lva-ritual)}
+.cell.lv-sick{--fill:var(--lv-sick);--tx:var(--lvt-sick);--acc:var(--lva-sick)}
+.cell.lv-personal{--fill:var(--lv-personal);--tx:var(--lvt-personal);--acc:var(--lva-personal)}
+.cell.lv-family{--fill:var(--lv-family);--tx:var(--lvt-family);--acc:var(--lva-family)}
+.cell.lv-marriage{--fill:var(--lv-marriage);--tx:var(--lvt-marriage);--acc:var(--lva-marriage)}
+.cell.lv-funeral{--fill:var(--lv-funeral);--tx:var(--lvt-funeral);--acc:var(--lva-funeral)}
+.cell.lv.work::before,.cell.ot.work::before{content:"";position:absolute;left:8px;right:8px;top:0;height:3px;border-radius:0 0 3px 3px;background:var(--c-work-acc)}
+.cell.holrest{--acc:var(--red)}
+.mk.sw{background:var(--c-swap-acc);color:#fff}
+.mk.ty{background:var(--e2);color:#fff}
+.cell.typh::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(135deg,var(--typh) 0 5px,transparent 5px 11px)}
+.hp{display:block;max-width:100%;font-size:10px;font-weight:900;line-height:1.3;padding:1px 3px;border-radius:5px;color:#fff;background:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hp.company{background:var(--rose)}
+.hp.makeup{background:transparent;color:var(--acc);padding:0;font-weight:700}
+.key{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;font-size:12px;color:var(--muted)}
+.key span{display:inline-flex;align-items:center;gap:5px}
+.key i{width:14px;height:14px;border-radius:4px;border:1px solid var(--line);flex:none}
+.lvdot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:0;border:1px solid var(--line)}
+.stat.c-work{background:var(--c-work);border-color:transparent}
+.stat.c-pay{background:var(--c-ot);border-color:transparent}
+.stat.c-leave{background:var(--lv-annual);border-color:transparent}
+.stat.hot{border:2.5px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--rainbow) border-box}
+.tabs button[aria-current="page"] svg{background:var(--c-work);border-radius:10px;padding:2px;width:32px;height:26px}
+/* 發薪日：彩虹框 */
+.cell.payday{border:2.5px solid transparent;background:linear-gradient(var(--fill),var(--fill)) padding-box,var(--rainbow) border-box;padding:4px 4px 5px}
+.mk.pay{background:var(--rainbow);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3)}
+@media (prefers-reduced-motion: no-preference){.cell.payday{animation:shine 3.2s ease-in-out infinite}@keyframes shine{50%{filter:saturate(1.25) brightness(1.03)}}}
+
+/* 摘要 */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;text-align:left}
+.stat small{display:block;color:var(--muted);font-size:12px;font-weight:700}
+.stat b{font:800 24px/1.15 var(--f-num)}
+.stat em{font-style:normal;color:var(--muted);font-size:12px}
+
+
+/* 通用 */
+h2{font:900 20px/1.3 var(--f-body);margin:14px 0 8px;text-wrap:balance}
+h3{font-size:14px;font-weight:900;margin:16px 0 6px;color:var(--muted);letter-spacing:.04em}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .l{min-width:0}
+.row .r{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:900;padding:2px 7px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.e3{background:var(--e3-soft);color:var(--e3)}
+.chip.red{background:transparent;color:var(--red);border:1px solid var(--red)}
+.chip.gold{background:var(--gold-soft);color:var(--warn)}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:900;background:var(--sunk)}
+.btn.main{background:var(--e3);color:var(--e3-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted);min-width:0}
+input[type=number],input[type=text],input[type=date],input[type=time],select,textarea{width:100%;border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:9px 10px;font-size:16px;color:var(--ink);min-width:0}
+textarea{min-height:96px;resize:vertical;line-height:1.6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.note{font-size:12px;color:var(--muted);margin:6px 0 0}
+.flag{display:flex;gap:8px;align-items:flex-start;background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:8px 10px;font-size:13px;font-weight:700;margin-top:8px}
+.okbox{background:var(--ok-soft);color:var(--ok)}
+.big{font:800 40px/1 var(--f-num);letter-spacing:-.02em}
+.empty{color:var(--muted);font-size:13px;padding:6px 0}
+details.card>summary{list-style:none;cursor:pointer;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"＋";color:var(--muted)}
+details.card[open]>summary::after{content:"－"}
+details.card[open]>summary{margin-bottom:8px}
+.stack{display:flex;flex-direction:column;gap:10px}
+
+/* 底部分頁 */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tabs nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tabs button{border:0;background:transparent;padding:8px 0 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--muted)}
+.tabs button svg{width:22px;height:22px}
+.tabs button[aria-current="page"]{color:var(--e3)}
+.fab{position:fixed;z-index:24;right:max(16px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(72px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:16px;border:0;background:var(--ink);color:var(--bg);box-shadow:var(--shadow);display:grid;place-items:center}
+.fab svg{width:24px;height:24px}
+
+/* 抽屜 */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(8,14,20,.45)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-height:88%;overflow:auto;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:var(--shadow);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet-in{max-width:560px;margin:0 auto}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 8px}
+.sh-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.sh-date{font:800 30px/1.05 var(--f-num)}
+.status{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-weight:900;font-size:14px}
+.status.w{background:var(--e3);color:var(--e3-ink)}
+.status.o{background:var(--sunk);color:var(--muted)}
+.who{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.who span{font:700 12px/1 var(--f-num);padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);color:var(--muted)}
+.who span.on{color:#fff;border-color:transparent}
+.who .t1.on{background:var(--e1)}.who .t2.on{background:var(--e2)}.who .t3.on{background:var(--e3)}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.picks button{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font:700 14px var(--f-num)}
+.picks button[aria-pressed="true"]{border-color:var(--e3);background:var(--e3-soft);color:var(--e3)}
+.photos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}
+.ph{position:relative;aspect-ratio:1;max-width:100%;border-radius:10px;overflow:hidden;background:var(--sunk)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:12px;line-height:1}
+.addph{border:1.5px dashed var(--line);background:transparent;border-radius:10px;aspect-ratio:1;max-width:100%;font-size:22px;color:var(--muted)}
+.viewer{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}
+.viewer img{max-height:90%;border-radius:8px}
+
+/* 小算盤 */
+.calc-disp{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-align:right;margin-bottom:10px}
+.calc-disp .ex{color:var(--muted);min-height:20px;font:500 14px var(--f-num);word-break:break-all}
+.calc-disp .rs{font:800 40px/1.1 var(--f-num);word-break:break-all}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.keys button{height:58px;border-radius:16px;border:0;background:var(--surface);font:700 22px var(--f-num);box-shadow:0 1px 0 var(--line)}
+.keys .op{background:var(--e3-soft);color:var(--e3)}
+.keys .eq{background:var(--e3);color:var(--e3-ink)}
+.keys .fn{background:var(--sunk)}
+.keys .zero{grid-column:span 2}
+
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.testrow{display:grid;grid-template-columns:auto 1fr;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.testrow code{font-size:11px;color:var(--muted);word-break:break-all}
+.hl-list .row{align-items:flex-start}
+@media (prefers-reduced-motion: no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+@media (max-width:380px){.cell{min-height:66px}.cell .d{font-size:16px}.mo b{font-size:28px}}
+
+/* 立體感：像實體按鍵，上緣受光、下緣有厚度、底下有陰影；按下去會往下沉 */
+:root{--hi:rgba(255,255,255,.75);--edge:rgba(26,37,50,.10);--drop:0 4px 10px rgba(26,37,50,.10),0 1px 2px rgba(26,37,50,.10);--drop-lg:0 10px 24px rgba(26,37,50,.12),0 2px 4px rgba(26,37,50,.08)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hi:rgba(255,255,255,.07);--edge:rgba(0,0,0,.45);--drop:0 4px 10px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.5);--drop-lg:0 10px 24px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--hi:rgba(255,255,255,.07);--edge:rgba(0,0,0,.45);--drop:0 4px 10px rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.5);--drop-lg:0 10px 24px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4)}
+.cal{gap:7px}
+.cell{background:linear-gradient(180deg,var(--hi),transparent 60%),var(--fill);border-color:transparent;
+  box-shadow:inset 0 1.5px 0 var(--hi),inset 0 -3px 0 var(--edge),var(--drop);transition:transform .08s ease,box-shadow .08s ease}
+.cell.swapO{border:1.5px dashed var(--c-swap-dash)}
+.cell.payday{background:linear-gradient(180deg,var(--hi),transparent 60%) padding-box,linear-gradient(var(--fill),var(--fill)) padding-box,var(--rainbow) border-box}
+.cell:active{transform:translateY(2px);box-shadow:inset 0 1px 0 var(--hi),inset 0 -1px 0 var(--edge),0 1px 2px var(--edge)}
+.cell .d{text-shadow:0 1px 0 var(--hi)}
+.card,.stat{box-shadow:inset 0 1.5px 0 var(--hi),inset 0 -2px 0 var(--edge),var(--drop);border-color:transparent}
+.stat{background-image:linear-gradient(180deg,var(--hi),transparent 55%)}
+.stat.hot{background:linear-gradient(180deg,var(--hi),transparent 55%) padding-box,linear-gradient(var(--surface),var(--surface)) padding-box,var(--rainbow) border-box}
+.stat:active{transform:translateY(2px)}
+.iconbtn,.pillbtn,.btn,.picks button{border-color:transparent;background-image:linear-gradient(180deg,var(--hi),transparent 70%);box-shadow:inset 0 1px 0 var(--hi),inset 0 -2.5px 0 var(--edge),var(--drop);transition:transform .08s ease}
+.btn.ghost{background-color:var(--surface)}
+.btn.danger{border-color:var(--red)}
+.iconbtn:active,.pillbtn:active,.btn:active,.picks button:active,.keys button:active{transform:translateY(2px);box-shadow:inset 0 1px 0 var(--hi),inset 0 -1px 0 var(--edge)}
+.seg{box-shadow:inset 0 2px 4px var(--edge)}
+.seg button[aria-pressed="true"]{box-shadow:inset 0 1px 0 var(--hi),inset 0 -2px 0 var(--edge),0 2px 5px var(--edge)}
+.keys button{background-image:linear-gradient(180deg,var(--hi),transparent 70%);box-shadow:inset 0 1.5px 0 var(--hi),inset 0 -4px 0 var(--edge),var(--drop);transition:transform .08s ease}
+.calc-disp{box-shadow:inset 0 3px 8px var(--edge);border-color:transparent;background:var(--sunk)}
+.fab{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.25),inset 0 -4px 0 rgba(0,0,0,.3),var(--drop-lg)}
+.fab:active{transform:translateY(2px)}
+input[type=number],input[type=text],input[type=date],input[type=time],select,textarea{box-shadow:inset 0 2px 4px var(--edge);border-color:transparent}
+.tabs{box-shadow:0 -6px 18px var(--edge)}
+.sheet{box-shadow:0 -12px 30px rgba(0,0,0,.25)}
+@media (prefers-reduced-motion: reduce){.cell,.btn,.iconbtn,.keys button{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top" id="top"></header>
+  <main id="view"></main>
+</div>
+<button class="fab" id="fab" aria-label="打開小算盤"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg></button>
+<div class="tabs"><nav id="tabs"></nav></div>
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" hidden role="dialog" aria-modal="true"><div class="sheet-in" id="sheetIn"></div></section>
+<div class="viewer" id="viewer" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== 計算核心（與畫面分離，可獨立測試） ===== */
+const Calc = (() => {
+  const pad = n => String(n).padStart(2, '0');
+  const ymd = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+  const toDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const fromDate = dt => ymd(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+  const addDays = (s, n) => { const d = toDate(s); d.setUTCDate(d.getUTCDate() + n); return fromDate(d); };
+  const diffDays = (a, b) => Math.round((toDate(a) - toDate(b)) / 864e5);
+  const dow = s => toDate(s).getUTCDay();
+  const dim = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const ymOf = s => s.slice(0, 7);
+  const ymAdd = (ym, n) => { let [y, m] = ym.split('-').map(Number); m += n; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return `${y}-${pad(m)}`; };
+  const monthDates = ym => { const [y, m] = ym.split('-').map(Number); const out = []; for (let d = 1; d <= dim(y, m); d++) out.push(ymd(y, m, d)); return out; };
+  const ceil = x => Math.ceil(x - 1e-9);
+  const round = x => Math.round(x + 1e-9);
+
+  /* --- 班表：做四休二，6 天一循環（已驗證：2026/10 班別表、2026/07 出勤表） --- */
+  const ANCHOR = { E1: '2026-09-29', E2: '2026-10-01', E3: '2026-10-03' };
+  const TEAMS = ['E1', 'E2', 'E3'];
+  const SHIFT_HOURS = 10;
+  const baseWork = (team, date) => ((diffDays(date, ANCHOR[team]) % 6) + 6) % 6 < 4;
+
+  /* --- 假日 --- 農曆與清明：香港天文台對照表（與台灣同為 UTC+8）
+     [正月初一, 端午, 中秋, 清明] */
+  const LUNAR = {
+    2026: ['2026-02-17', '2026-06-19', '2026-09-25', '2026-04-05'],
+    2027: ['2027-02-06', '2027-06-09', '2027-09-15', '2027-04-05'],
+    2028: ['2028-01-26', '2028-05-28', '2028-10-03', '2028-04-04'],
+    2029: ['2029-02-13', '2029-06-16', '2029-09-22', '2029-04-04'],
+    2030: ['2030-02-03', '2030-06-05', '2030-09-12', '2030-04-05'],
+    2031: ['2031-01-23', '2031-06-24', '2031-10-01', '2031-04-05'],
+    2032: ['2032-02-11', '2032-06-12', '2032-09-19', '2032-04-04'],
+    2033: ['2033-01-31', '2033-06-01', '2033-09-08', '2033-04-04'],
+    2034: ['2034-02-19', '2034-06-20', '2034-09-27', '2034-04-05'],
+    2035: ['2035-02-08', '2035-06-10', '2035-09-16', '2035-04-05'],
+    2036: ['2036-01-28', '2036-05-30', '2036-10-04', '2036-04-04'],
+    2037: ['2037-02-15', '2037-06-18', '2037-09-24', '2037-04-04']
+  };
+  const YEARS = Object.keys(LUNAR).map(Number);
+
+  function genYear(y) {
+    const L = LUNAR[y]; const list = [];
+    const add = (date, name, kind) => list.push({ date, name, kind });
+    add(ymd(y, 1, 1), '元旦', 'national');
+    const ny = L[0];
+    const spring = [addDays(ny, -2), addDays(ny, -1), ny, addDays(ny, 1), addDays(ny, 2)];
+    ['小年夜', '除夕', '春節', '春節', '春節'].forEach((n, i) => add(spring[i], n, 'national'));
+    add(ymd(y, 2, 28), '和平紀念日', 'national');
+    const qm = L[3];
+    add(qm === ymd(y, 4, 4) ? ymd(y, 4, 3) : ymd(y, 4, 4), '兒童節', 'national');
+    add(qm, '清明節', 'national');
+    add(ymd(y, 5, 1), '勞動節', 'national');
+    add(L[1], '端午節', 'national');
+    add(L[2], '中秋節', 'national');
+    add(ymd(y, 9, 28), '教師節', 'national');
+    add(ymd(y, 10, 10), '國慶日', 'national');
+    add(ymd(y, 10, 25), '光復節', 'national');
+    add(ymd(y, 12, 25), '行憲紀念日', 'national');
+    add(ymd(y, 3, 29), '青年節', 'company');
+    add(ymd(y, 10, 31), '蔣公誕辰', 'company');
+    add(ymd(y, 11, 12), '國父誕辰', 'company');
+    // 補假（推算）：週六提前到週五、週日延後到週一；春節區段遇週末，往後順延
+    const nat = new Set(list.filter(h => h.kind === 'national').map(h => h.date));
+    const made = new Set();
+    const off = d => { const w = dow(d); return w === 0 || w === 6 || nat.has(d) || made.has(d); };
+    let extra = spring.filter(d => [0, 6].includes(dow(d))).length, cur = spring[4];
+    while (extra > 0) { cur = addDays(cur, 1); if (!off(cur)) { made.add(cur); add(cur, '春節補假', 'makeup'); extra--; } }
+    list.filter(h => h.kind === 'national' && !spring.includes(h.date)).forEach(h => {
+      const w = dow(h.date); if (w !== 0 && w !== 6) return;
+      const step = w === 6 ? -1 : 1; let c = h.date;
+      do { c = addDays(c, step); } while (off(c));
+      made.add(c); add(c, h.name + '補假', 'makeup');
+    });
+    return list;
+  }
+  let GEN = null;
+  const generated = () => {
+    if (!GEN) { GEN = {}; YEARS.forEach(y => genYear(y).forEach(h => { (GEN[h.date] = GEN[h.date] || []).push({ name: h.name, kind: h.kind }); })); }
+    return GEN;
+  };
+  // edits: { date: [ {name, kind} ] }，空陣列 = 刪除當天全部
+  const holidaysOn = (date, edits) => (edits && edits[date]) ? edits[date] : (generated()[date] || []);
+  const holidayList = (year, edits) => {
+    const dates = new Set([...Object.keys(generated()), ...Object.keys(edits || {})].filter(d => d.startsWith(year + '-')));
+    return [...dates].sort().flatMap(d => holidaysOn(d, edits).map(h => ({ date: d, ...h, edited: !!(edits && edits[d]) })));
+  };
+  const isRedDay = (date, edits) => holidaysOn(date, edits).some(h => h.kind === 'national' || h.kind === 'company');
+  const isBankOff = (date, edits) => { const w = dow(date); return w === 0 || w === 6 || holidaysOn(date, edits).some(h => h.kind === 'national' || h.kind === 'makeup'); };
+
+  /* --- 薪資日：每月 5 日發上個月薪資，遇週末或國定假日往前推到最近的上班日（已驗證） --- */
+  function payday(salaryYm, edits) {
+    let d = ymAdd(salaryYm, 1) + '-05';
+    while (isBankOff(d, edits)) d = addDays(d, -1);
+    return d;
+  }
+
+  /* --- 調班 --- swap: {id, kind:'self'|'peer', peer, workDate, offDate}
+     workDate：原本上班 → 變休假；offDate：原本休假 → 變上班 */
+  function swapOn(date, swaps) { return (swaps || []).find(s => s.workDate === date || s.offDate === date) || null; }
+  function finalWork(date, swaps, team = 'E3') {
+    const b = baseWork(team, date); const s = swapOn(date, swaps);
+    return s ? !b : b;
+  }
+  function swapLabel(date, s) {
+    if (!s) return '';
+    if (s.kind === 'self') return s.workDate === date ? '自調休' : '自調上';
+    return s.workDate === date ? '調休' : '調上';
+  }
+  function validateSwap(swaps, a, b, ignoreId) {
+    if (!a || !b) return '請選兩個日期';
+    if (a === b) return '兩個日期不能相同';
+    const others = (swaps || []).filter(s => s.id !== ignoreId);
+    for (const d of [a, b]) if (others.some(s => s.workDate === d || s.offDate === d)) return `${d.slice(5).replace('-', '/')} 已經有調班紀錄`;
+    if (ymOf(a) !== ymOf(b)) return '調班不可跨月，兩天必須在同一個月';
+    const wa = baseWork('E3', a), wb = baseWork('E3', b);
+    if (wa === wb) return wa ? '兩天原本都是上班日，必須一天上班、一天休假' : '兩天原本都是休假日，必須一天上班、一天休假';
+    return null;
+  }
+  const orderSwap = (a, b) => baseWork('E3', a) ? { workDate: a, offDate: b } : { workDate: b, offDate: a };
+
+  /* --- 假別 --- */
+  const LEAVE_TYPES = [
+    { key: 'annual', name: '特休', rate: 0, verified: true },
+    { key: 'comp', name: '補休', rate: 0, verified: true },
+    { key: 'ritual', name: '原住民祭儀假', rate: 0, verified: true },
+    { key: 'sick', name: '病假', rate: 0.5, verified: false },
+    { key: 'personal', name: '事假', rate: 1, verified: false },
+    { key: 'family', name: '家庭照顧假', rate: 1, verified: false },
+    { key: 'marriage', name: '婚假', rate: 0, verified: false },
+    { key: 'funeral', name: '喪假', rate: 0, verified: false }
+  ];
+  const LEAVE_LIMIT_DAYS = { sick: 30, personal: 14, family: 7, marriage: 8 };
+
+  /* --- 特休：每年 1/1 發放 min(180+8×(年−2026), 240)；未休完遞延一年，再未休完折現於隔年 1 月薪資；先扣遞延 --- */
+  const grant = y => Math.min(180 + 8 * (y - 2026), 240);
+  function ledger(start, entries, until) {
+    // start: {date, current, deferred, comp}（指該日結束時的餘額）
+    let cur = +start.current, def = +start.deferred, comp = +start.comp, year = +start.date.slice(0, 4);
+    const cashouts = {}, rolls = [];
+    const roll = toYear => {
+      while (year < toYear) {
+        year++;
+        if (def > 0) cashouts[`${year}-01`] = +(def.toFixed(2));
+        rolls.push({ year, deferredCashed: Math.max(def, 0), newDeferred: cur, grant: grant(year) });
+        def = cur; cur = grant(year);
+      }
+    };
+    entries.filter(e => e.date > start.date && e.date <= until).sort((a, b) => a.date < b.date ? -1 : 1).forEach(e => {
+      roll(+e.date.slice(0, 4));
+      if (e.type === 'annual') { const fromDef = Math.min(Math.max(def, 0), e.hours); def -= fromDef; cur -= e.hours - fromDef; }
+      if (e.type === 'comp') comp -= e.hours;
+      if (e.type === 'compAdd') comp += e.hours;
+    });
+    roll(+until.slice(0, 4));
+    const r = x => Math.round(x * 100) / 100;
+    return { current: r(cur), deferred: r(def), comp: r(comp), cashouts, rolls };
+  }
+
+  /* --- 薪資（已驗證：2026/03、2026/07 兩張薪資單 + 2026/07 出勤表） --- */
+  const PAY_FIELDS = {
+    fixed: [['base', '本薪'], ['mgr', '主管加給'], ['env', '環境津貼'], ['tech', '技術津貼'], ['shift', '輪班津貼'], ['attend', '出勤津貼']],
+    variable: [['merit', '考績獎金'], ['meal2', '伙食(2)', 'A'], ['meal1', '伙食(1)', 'B'], ['otherA', '其他應稅加項', 'A'], ['otherB', '其他免稅加項', 'B']],
+    deduct: [['labor', '勞保費'], ['health', '健保費'], ['welfare', '福利金'], ['tax', '所得稅'], ['food2', '餐費(2)'], ['food1', '餐費(1)'], ['court', '法院扣款'], ['union', '福委代扣'], ['dorm', '宿舍費'], ['group', '團保費'], ['otherD', '其他代扣']]
+  };
+  function pay(p) {
+    // p: {fixed, variable, deduct, ot:[{date,kind,hours}], h1:[{date,hours}], leave:[{date,type,hours}], rates:{leave:{key:rate}, workday}, cashoutHours}
+    const v = (o, k) => +((o || {})[k] || 0);
+    const A1 = ['base', 'mgr', 'env', 'tech', 'shift', 'attend'].reduce((s, k) => s + v(p.fixed, k), 0) + v(p.variable, 'merit');
+    const B0 = v(p.variable, 'meal1');
+    const A2 = round((A1 + B0) / 240 * 2 * 50);
+    const otRate = (A1 + A2 + B0) / 240, leaveRate = (A1 + B0) / 240;
+    const mult = k => k === 'rest' ? 2 : +((p.rates || {}).workday ?? 1);
+    const ot = (p.ot || []).map(e => ({ ...e, mult: mult(e.kind), amount: ceil(e.hours * otRate * mult(e.kind)) }));
+    const h1 = (p.h1 || []).filter(e => e.hours > 0).map(e => ({ ...e, amount: ceil(e.hours * otRate) }));
+    const lrate = k => { const r = ((p.rates || {}).leave || {})[k]; return r ?? (LEAVE_TYPES.find(t => t.key === k) || {}).rate ?? 0; };
+    const leave = (p.leave || []).map(e => ({ ...e, rate: lrate(e.type), amount: round(e.hours * leaveRate * lrate(e.type)) }));
+    const cashout = p.cashoutHours ? round(p.cashoutHours * leaveRate) : 0;
+    const otSum = ot.reduce((s, e) => s + e.amount, 0), h1Sum = h1.reduce((s, e) => s + e.amount, 0);
+    const C = leave.reduce((s, e) => s + e.amount, 0);
+    const D = PAY_FIELDS.deduct.reduce((s, [k]) => s + v(p.deduct, k), 0);
+    const A = A1 + A2 + v(p.variable, 'meal2') + v(p.variable, 'otherA') + cashout;
+    const B = B0 + otSum + h1Sum + v(p.variable, 'otherB');
+    const otHours = ot.reduce((s, e) => s + e.hours, 0);
+    return { A1, A2, B0, otRate, leaveRate, ot, h1, leave, cashout, otSum, h1Sum, A, B, C, D, gross: A + B, net: A + B - C - D, otHours, over46: otHours > 46 };
+  }
+
+  return { pad, ymd, toDate, fromDate, addDays, diffDays, dow, dim, ymOf, ymAdd, monthDates, ANCHOR, TEAMS, SHIFT_HOURS, baseWork,
+    holidaysOn, holidayList, isRedDay, isBankOff, payday, swapOn, finalWork, swapLabel, validateSwap, orderSwap,
+    LEAVE_TYPES, LEAVE_LIMIT_DAYS, grant, ledger, PAY_FIELDS, pay, YEARS };
+})();
+
+
+/* ===== 驗收測資 T1–T6（規格第 9 節） ===== */
+function runSpecTests(C) {
+  const out = [];
+  const t = (group, name, got, want) => out.push({ group, name, got: JSON.stringify(got), want: JSON.stringify(want), ok: JSON.stringify(got) === JSON.stringify(want) });
+  const days = (team, ym) => C.monthDates(ym).filter(d => C.baseWork(team, d)).map(d => +d.slice(8));
+  // T1 班表
+  t('T1 班表', '2026/10 E3', days('E3', '2026-10'), [3,4,5,6,9,10,11,12,15,16,17,18,21,22,23,24,27,28,29,30]);
+  t('T1 班表', '2026/10 E1', days('E1', '2026-10'), [1,2,5,6,7,8,11,12,13,14,17,18,19,20,23,24,25,26,29,30,31]);
+  t('T1 班表', '2026/10 E2', days('E2', '2026-10'), [1,2,3,4,7,8,9,10,13,14,15,16,19,20,21,22,25,26,27,28,31]);
+  t('T1 班表', '2026/07 E3', days('E3', '2026-07'), [1,2,5,6,7,8,11,12,13,14,17,18,19,20,23,24,25,26,29,30,31]);
+  t('T1 班表', '2027/01/01 上班隊別', C.TEAMS.filter(x => C.baseWork(x, '2027-01-01')), ['E2', 'E3']);
+  t('T1 班表', '2036/12/31 上班隊別', C.TEAMS.filter(x => C.baseWork(x, '2036-12-31')), ['E1', 'E2']);
+  let two = true; for (let i = 0; i < 3900; i++) { const d = C.addDays('2026-10-01', i); if (C.TEAMS.filter(x => C.baseWork(x, d)).length !== 2) two = false; }
+  t('T1 班表', '每天剛好兩隊上班', two, true);
+  // T2 發薪日
+  [['2026-03', '2026-04-02'], ['2026-07', '2026-08-05'], ['2026-10', '2026-11-05'], ['2026-11', '2026-12-04'], ['2027-08', '2027-09-03']]
+    .forEach(([m, w]) => t('T2 發薪日', m + ' 薪資', C.payday(m, {}), w));
+  // T3 薪資公式（虛構薪資，規則與真實薪資單驗證過的相同）
+  const P = C.pay({
+    fixed: { base: 30000, tech: 1000, shift: 2000, attend: 500 }, variable: { merit: 1500, meal1: 3000, meal2: 1500 },
+    deduct: { labor: 1000, health: 800, welfare: 300, dorm: 2000 },
+    ot: [{ kind: 'rest', hours: 10 }, { kind: 'rest', hours: 8 }, { kind: 'rest', hours: 10 }],
+    h1: [{ hours: 10 }], leave: [{ type: 'sick', hours: 20 }, { type: 'personal', hours: 10 }, { type: 'annual', hours: 10 }]
+  });
+  t('T3 薪資公式', 'A1 / A2', [P.A1, P.A2], [35000, 15833]);
+  t('T3 薪資公式', '加班時薪', +P.otRate.toFixed(4), 224.3042);
+  t('T3 薪資公式', '休息日加班逐筆進位', P.ot.map(e => e.amount), [4487, 3589, 4487]);
+  t('T3 薪資公式', '逐筆進位 ≠ 總額進位一次', P.otSum, 12563);
+  t('T3 薪資公式', '假日照常上班一倍', P.h1Sum, 2244);
+  t('T3 薪資公式', 'A / B / 應付', [P.A, P.B, P.gross], [52333, 17807, 70140]);
+  t('T3 薪資公式', '病假半薪、事假全扣、特休不扣', P.leave.map(e => e.amount), [1583, 1583, 0]);
+  t('T3 薪資公式', '實發', P.net, 62874);
+  // T5 調班
+  t('T5 調班', '10/03 ↔ 10/07 成立', C.validateSwap([], '2026-10-03', '2026-10-07'), null);
+  const sw = [{ id: 'x', kind: 'self', ...C.orderSwap('2026-10-03', '2026-10-07') }];
+  t('T5 調班', '調班後 10/03 休、10/07 上', [C.finalWork('2026-10-03', sw), C.finalWork('2026-10-07', sw)], [false, true]);
+  t('T5 調班', '10/03 ↔ 10/04 拒絕', C.validateSwap([], '2026-10-03', '2026-10-04') !== null, true);
+  t('T5 調班', '10/30 ↔ 11/01 拒絕（跨月）', /跨月/.test(C.validateSwap([], '2026-10-30', '2026-11-01') || ''), true);
+  t('T5 調班', '10/25 光復節 E3 休假', [C.isRedDay('2026-10-25', {}), C.baseWork('E3', '2026-10-25')], [true, false]);
+  t('T5 調班', '10/10 國慶 E3 上班', [C.isRedDay('2026-10-10', {}), C.baseWork('E3', '2026-10-10')], [true, true]);
+  // T6 特休
+  const s0 = { date: '2026-10-23', current: 51.5, deferred: 0, comp: 0 };
+  const l1 = C.ledger(s0, [], '2027-01-01');
+  t('T6 特休', '2027/01/01 遞延 / 當年', [l1.deferred, l1.current], [51.5, 188]);
+  const l2 = C.ledger(s0, [{ date: '2027-03-01', type: 'annual', hours: 30 }], '2027-12-31');
+  t('T6 特休', '請 30 小時先扣遞延', [l2.deferred, l2.current], [21.5, 188]);
+  const l3 = C.ledger(s0, [{ date: '2027-03-01', type: 'annual', hours: 30 }], '2028-01-01');
+  t('T6 特休', '2028/01 折現時數 / 新餘額', [l3.cashouts['2028-01'], l3.deferred, l3.current], [21.5, 188, 196]);
+  t('T6 特休', '2033 / 2034 發放', [C.grant(2033), C.grant(2034), C.grant(2036)], [236, 240, 240]);
+  return out;
+}
+
+
+</script>
+<script>
+(() => {
+const C = Calc;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = n => (n < 0 ? '−' : '') + Math.abs(Math.round(n)).toLocaleString('en-US');
+const hrs = h => (Math.round(h * 100) / 100).toString();
+const WD = ['日', '一', '二', '三', '四', '五', '六'];
+const fmtMD = d => `${+d.slice(5, 7)}/${+d.slice(8)}`;
+const fmtFull = d => `${d.slice(0, 4)}/${fmtMD(d)}（${WD[C.dow(d)]}）`;
+const todayStr = () => { const t = new Date(); return C.ymd(t.getFullYear(), t.getMonth() + 1, t.getDate()); };
+const uid = () => Math.random().toString(36).slice(2, 10);
+const LT = Object.fromEntries(C.LEAVE_TYPES.map(t => [t.key, t]));
+const LVS = { annual: '特休', comp: '補休', ritual: '祭儀', sick: '病假', personal: '事假', family: '家照', marriage: '婚假', funeral: '喪假' };
+const shortHol = n => n === '和平紀念日' ? '二二八' : n.length <= 2 ? n : n.replace(/(紀念日|誕辰|節|日)$/, '');
+const lvDot = k => `<span class="lvdot" style="background:var(--lv-${k})"></span>`;
+
+/* ---------- 儲存：IndexedDB，失敗時退回記憶體 ---------- */
+const Store = (() => {
+  let db = null; const mem = {};
+  const open = () => new Promise(res => {
+    try {
+      const r = indexedDB.open('e3-shift-book', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { db = r.result; res(); };
+      r.onerror = () => res();
+    } catch (e) { res(); }
+  });
+  const tx = (mode, fn) => new Promise(res => {
+    if (!db) return res(fn(null));
+    try { const t = db.transaction('kv', mode); const s = t.objectStore('kv'); const q = fn(s); if (q) { q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); } else t.oncomplete = () => res(); } catch (e) { res(undefined); }
+  });
+  return {
+    open,
+    get: k => db ? tx('readonly', s => s.get(k)) : Promise.resolve(mem[k]),
+    set: (k, v) => { mem[k] = v; return db ? tx('readwrite', s => s.put(v, k)) : Promise.resolve(); },
+    del: k => { delete mem[k]; return db ? tx('readwrite', s => s.delete(k)) : Promise.resolve(); },
+    keys: () => db ? tx('readonly', s => s.getAllKeys()) : Promise.resolve(Object.keys(mem)),
+    get persistent() { return !!db; }
+  };
+})();
+
+/* ---------- 初始資料：使用者 2026/07 薪資單與出勤表（真實資料） ---------- */
+const ZERO_PAY = () => ({
+  fixed: { base: 0, mgr: 0, env: 0, tech: 0, shift: 0, attend: 0 },
+  variable: { merit: 0, meal2: 0, meal1: 0, otherA: 0, otherB: 0 },
+  deduct: { labor: 0, health: 0, welfare: 0, tax: 0, food2: 0, food1: 0, court: 0, union: 0, dorm: 0, group: 0, otherD: 0 },
+  actual: null
+});
+/* 公開版不含任何個人資料：第一次使用時，到「更多 → 備份」匯入個人資料檔 */
+const SEED = () => ({
+  v: 1, theme: 'auto', mode: 'mine',
+  start: { date: todayStr(), current: 0, deferred: 0, comp: 0 },
+  rates: { workday: 1, leave: {} }, holidayEdits: {}, swaps: [], payMonths: {}, days: {}
+});
+let S = SEED();
+const photoCache = {};
+let saveTimer = null;
+const save = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => Store.set('state', JSON.parse(JSON.stringify(S))), 250); };
+
+/* ---------- UI 狀態 ---------- */
+const MIN_YM = '2026-01', MAX_YM = '2036-12';
+const today = todayStr();
+const clampYm = ym => ym < MIN_YM ? MIN_YM : ym > MAX_YM ? MAX_YM : ym;
+const UI = { tab: 'calendar', ym: clampYm(today.slice(0, 7)), payYm: clampYm(today.slice(0, 7)), leaveYear: +today.slice(0, 4), hlYear: Math.max(2026, Math.min(2036, +today.slice(0, 4))), sheet: null };
+
+/* ---------- 資料存取 ---------- */
+const day = d => S.days[d] || {};
+const dayW = d => (S.days[d] = S.days[d] || {});
+const tidyDay = d => { const x = S.days[d]; if (!x) return; ['ot', 'leave', 'photos', 'reminders'].forEach(k => { if (x[k] && !x[k].length) delete x[k]; }); if (!x.note) delete x.note; if (!x.typhoon) delete x.typhoon; if (x.h1 == null) delete x.h1; if (!Object.keys(x).length) delete S.days[d]; };
+const allLeave = () => Object.entries(S.days).flatMap(([d, x]) => (x.leave || []).map(e => ({ ...e, date: d })));
+const isWork = d => C.finalWork(d, S.swaps);
+const leaveHoursOn = d => (day(d).leave || []).reduce((s, e) => s + +e.hours, 0);
+const h1Hours = d => {
+  if (!isWork(d)) return 0;
+  const reason = C.isRedDay(d, S.holidayEdits) || day(d).typhoon;
+  if (!reason) return 0;
+  if (day(d).h1 != null) return +day(d).h1;
+  return Math.max(0, C.SHIFT_HOURS - leaveHoursOn(d));
+};
+const payInputs = ym => {
+  if (S.payMonths[ym]) return { rec: S.payMonths[ym], from: null };
+  const ks = Object.keys(S.payMonths).sort();
+  const prev = ks.filter(k => k < ym).pop() || ks[0];
+  return { rec: prev ? S.payMonths[prev] : ZERO_PAY(), from: prev || null };
+};
+const ensurePayMonth = ym => {
+  if (!S.payMonths[ym]) { const { rec } = payInputs(ym); S.payMonths[ym] = JSON.parse(JSON.stringify({ ...rec, actual: null })); }
+  return S.payMonths[ym];
+};
+const leaveRates = () => Object.fromEntries(C.LEAVE_TYPES.map(t => [t.key, S.rates.leave[t.key] ?? t.rate]));
+const monthPay = ym => {
+  const { rec, from } = payInputs(ym);
+  const dates = C.monthDates(ym);
+  const ot = dates.flatMap(d => (day(d).ot || []).map(e => ({ date: d, kind: e.kind, hours: +e.hours })));
+  const h1 = dates.map(d => ({ date: d, hours: h1Hours(d), why: day(d).typhoon && !C.isRedDay(d, S.holidayEdits) ? '颱風假' : (C.holidaysOn(d, S.holidayEdits).find(h => h.kind !== 'makeup') || {}).name })).filter(e => e.hours > 0);
+  const leave = dates.flatMap(d => (day(d).leave || []).map(e => ({ date: d, type: e.type, hours: +e.hours })));
+  const led = C.ledger(S.start, allLeave(), ym + '-01');
+  const cashoutHours = ym.endsWith('-01') ? (led.cashouts[ym] || 0) : 0;
+  const r = C.pay({ fixed: rec.fixed, variable: rec.variable, deduct: rec.deduct, ot, h1, leave, cashoutHours, rates: { workday: S.rates.workday, leave: leaveRates() } });
+  return { ...r, rec, from, cashoutHours, actual: S.payMonths[ym] ? S.payMonths[ym].actual : null };
+};
+const ledgerAt = d => C.ledger(S.start, allLeave(), d);
+
+/* ---------- 共用元件 ---------- */
+const toast = msg => { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => t.hidden = true, 2200); };
+const copyText = async (text, okMsg) => {
+  try { await navigator.clipboard.writeText(text); toast(okMsg || '已複製'); }
+  catch (e) { toast('無法自動複製，請長按文字框手動複製'); }
+};
+const tryDownload = async (name, text, type) => {
+  try {
+    const file = new File([text], name, { type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) { }
+};
+const ICONS = {
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  pay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9.5c0-1.4 1.3-2.2 3-2.2s3 .9 3 2.2-1.1 2-3 2.5-3 1.1-3 2.5 1.3 2.2 3 2.2 3-.8 3-2.2M12 5.5v13"/></svg>',
+  leave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20c2-6 6-9 12-10M16 10c-1-3-4-5-8-5 1 4 3 6 8 5Z"/><path d="M16 10c3-1 4.5-3 5-5-3 0-5 1.5-5 5Z"/></svg>',
+  diary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h11a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1Z"/><path d="M5 18a2 2 0 0 1 2-2h12M9 7h6M9 11h4"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>'
+};
+const TABS = [['calendar', '班表'], ['pay', '薪資'], ['leave', '假勤'], ['diary', '日誌'], ['more', '更多']];
+
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(([k, n]) => `<button data-tab="${k}" ${UI.tab === k ? 'aria-current="page"' : ''}>${ICONS[k]}<span>${n}</span></button>`).join('');
+}
+function go(tab) { UI.tab = tab; try { history.replaceState(null, '', '#' + tab); } catch (e) { } render(); window.scrollTo(0, 0); }
+
+/* ---------- 頂部列 ---------- */
+function renderTop() {
+  const ymTitle = ym => { const [y, m] = ym.split('-'); return `<div class="mo"><b class="num">${+m}月</b><span class="num">${y}</span></div>`; };
+  let h = '';
+  if (UI.tab === 'calendar') {
+    h = `${ymTitle(UI.ym)}<button class="iconbtn" data-nav="-1" aria-label="上個月" ${UI.ym <= MIN_YM ? 'disabled' : ''}>‹</button><button class="pillbtn" data-nav="0">今天</button><button class="iconbtn" data-nav="1" aria-label="下個月" ${UI.ym >= MAX_YM ? 'disabled' : ''}>›</button>`;
+  } else if (UI.tab === 'pay') {
+    h = `${ymTitle(UI.payYm)}<button class="iconbtn" data-pnav="-1" aria-label="上個月">‹</button><button class="pillbtn" data-pnav="0">本月</button><button class="iconbtn" data-pnav="1" aria-label="下個月">›</button>`;
+  } else {
+    const t = { leave: '假勤', diary: '日誌', more: '更多' }[UI.tab];
+    h = `<div class="mo"><b>${t}</b></div>`;
+  }
+  $('#top').innerHTML = h;
+}
+
+/* ---------- 班表 ---------- */
+function renderCalendar() {
+  const ym = UI.ym, [y, m] = ym.split('-').map(Number);
+  const first = C.ymd(y, m, 1), lead = (C.dow(first) + 6) % 7, n = C.dim(y, m);
+  const all = S.mode === 'all';
+  let cells = [1, 2, 3, 4, 5, 6, 0].map(i => `<div class="wd ${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${WD[i]}</div>`).join('');
+  for (let i = 0; i < lead; i++) cells += '<div class="cell out" aria-hidden="true"></div>';
+  const pd = C.payday(C.ymAdd(ym, -1), S.holidayEdits);
+  for (let dd = 1; dd <= n; dd++) {
+    const d = C.ymd(y, m, dd), x = day(d), w = isWork(d), sw = C.swapOn(d, S.swaps);
+    const hs = C.holidaysOn(d, S.holidayEdits), red = hs.some(h => h.kind !== 'makeup') || C.dow(d) === 0;
+    const hn = hs.map(h => h.kind === 'makeup' ? '補假' : h.name).join('・');
+    const onlyMakeup = hs.length && hs.every(h => h.kind === 'makeup');
+    const lv = (x.leave || [])[0], hasOt = (x.ot || []).length > 0, isHol = hs.some(h => h.kind !== 'makeup');
+    const marks = [];
+    if (sw && (lv || hasOt)) marks.push(`<span class="mk sw">${C.swapLabel(d, sw)}</span>`);
+    if (d === pd) marks.push('<span class="mk pay">發薪</span>');
+    if ((x.leave || []).length > 1) marks.push(`<span class="mk">+${x.leave.length - 1}假</span>`);
+    if (x.typhoon) marks.push('<span class="mk ty">颱風</span>');
+    if (x.note || (x.photos || []).length || (x.reminders || []).length) marks.push('<span class="dot" aria-label="有日誌"></span>');
+    const teams = all ? `<div class="teams">${C.TEAMS.map((t, i) => `<span class="${(t === 'E3' ? w : C.baseWork(t, d)) ? 'on' + (i + 1) : ''}"></span>`).join('')}</div>` : '';
+    const state = lv ? `lv lv-${lv.type}` : hasOt ? 'ot' : sw ? (w ? 'swapW' : 'swapO') : (!w && isHol) ? 'holrest' : '';
+    const st = lv ? LVS[lv.type] : hasOt ? (w ? '上班+加' : '加班') : sw ? C.swapLabel(d, sw) : w ? '上班' : '休';
+    cells += `<button class="cell ${w ? 'work' : ''} ${state} ${x.typhoon ? 'typh' : ''} ${d === pd ? 'payday' : ''} ${red ? 'red' : ''} ${isHol ? 'hol' : ''} ${d === today ? 'today' : ''} ${sw ? 'swapped' : ''}" data-day="${d}" aria-label="${fmtFull(d)} ${st}${hn ? ' ' + hn : ''}">
+      <span class="d">${dd}</span><span class="st">${st}</span>${hs.length ? `<span class="hp ${hs[0].kind}">${esc(hs.map(h => h.kind === 'makeup' ? '補假' : shortHol(h.name)).join('・'))}</span>` : ''}
+      ${all ? teams : ''}<span class="marks" ${all ? 'style="margin-top:2px"' : ''}>${marks.join('')}</span></button>`;
+  }
+  const workDays = C.monthDates(ym).filter(isWork).length;
+  const mp = monthPay(ym);
+  const led = ledgerAt(today);
+  const nextPay = (() => { let k = C.ymAdd(today.slice(0, 7), -1); let p = C.payday(k, S.holidayEdits); if (p < today) { k = C.ymAdd(k, 1); p = C.payday(k, S.holidayEdits); } return { p, k, days: C.diffDays(p, today) }; })();
+  return `<div class="bar"><div class="seg" role="group" aria-label="顯示方式">
+      <button data-mode="mine" aria-pressed="${!all}">我的 E3</button><button data-mode="all" aria-pressed="${all}">三隊</button></div>
+      <div class="legend">${all ? '<span><i style="background:var(--e1)"></i>E1</span><span><i style="background:var(--e2)"></i>E2</span><span><i style="background:var(--e3)"></i>E3</span>' : ''}</div></div>
+    <div class="cal ${all ? 'mode-all' : ''}">${cells}</div>
+    <div class="key" aria-label="顏色說明">${[['上班', 'var(--c-work)'], ['休假', 'var(--surface)'], ['調上', 'var(--c-swap)'], ['調休', 'var(--surface);border:1.5px dashed var(--c-swap-dash)'], ['加班', 'var(--c-ot)']]
+      .concat(C.LEAVE_TYPES.map(t => [t.name, `var(--lv-${t.key})`]))
+      .concat([['颱風假', 'repeating-linear-gradient(135deg,var(--e2) 0 2px,transparent 2px 5px)'], ['發薪日', 'var(--rainbow)']])
+      .map(([n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}<span><i class="hp" style="width:auto;height:auto;border:0;padding:0 4px">國定</i></span><span><i class="hp company" style="width:auto;height:auto;border:0;padding:0 4px">公司</i></span></div>
+    <div class="stats">
+      <div class="stat c-work"><small>本月上班</small><b>${workDays}</b> <em>天 · ${workDays * 10} 小時</em></div>
+      <button class="stat c-pay" data-go="pay" data-payym="${ym}"><small>${+ym.slice(5)}月預估實發</small><b>${money(mp.net)}</b> <em>元</em></button>
+      <button class="stat c-leave" data-go="leave"><small>特休剩餘（今天）</small><b>${hrs(led.current + Math.max(led.deferred, 0))}</b> <em>小時${led.deferred > 0 ? ` · 含遞延 ${hrs(led.deferred)}` : ''}</em></button>
+      <div class="stat hot"><small>下次發薪 ${fmtMD(nextPay.p)}（${WD[C.dow(nextPay.p)]}）</small><b>${nextPay.days === 0 ? '就是今天' : nextPay.days}</b> <em>${nextPay.days === 0 ? '' : '天後'} · ${+nextPay.k.slice(5)}月薪資</em></div>
+    </div>`;
+}
+
+/* ---------- 某一天（抽屜） ---------- */
+function openDay(d) { UI.sheet = { kind: 'day', d, swapOpen: false, swapKind: 'self', peer: '', pick: null }; renderSheet(); }
+function renderDaySheet() {
+  const s = UI.sheet, d = s.d, x = day(d), w = isWork(d), base = C.baseWork('E3', d), sw = C.swapOn(d, S.swaps);
+  const hs = C.holidaysOn(d, S.holidayEdits);
+  const pd = C.payday(C.ymAdd(d.slice(0, 7), -1), S.holidayEdits) === d;
+  const h1 = h1Hours(d);
+  const red = C.isRedDay(d, S.holidayEdits);
+  // 調班
+  let swapHtml;
+  if (sw) {
+    const other = sw.workDate === d ? sw.offDate : sw.workDate;
+    swapHtml = `<div class="row"><div class="l"><b>${C.swapLabel(d, sw)}</b>${sw.kind === 'peer' ? ` · 與 ${esc(sw.peer || '同事')}` : ''}<div class="small muted">配對日：${fmtFull(other)}（${C.swapLabel(other, sw)}）</div></div>
+      <button class="btn danger" data-act="unswap" data-id="${sw.id}">取消調班</button></div>
+      <p class="note">取消時，配對的兩天會一起還原。</p>`;
+  } else if (!s.swapOpen) {
+    swapHtml = `<button class="btn ghost" data-act="swapopen">${base ? '這天要休假（調班）' : '這天要上班（調班）'}</button>`;
+  } else {
+    const cand = C.monthDates(d.slice(0, 7)).filter(o => o !== d && C.baseWork('E3', o) !== base && !C.swapOn(o, S.swaps));
+    const err = s.pick ? C.validateSwap(S.swaps, d, s.pick) : null;
+    swapHtml = `<div class="seg" role="group" aria-label="調班對象"><button data-swk="self" aria-pressed="${s.swapKind === 'self'}">自己調</button><button data-swk="peer" aria-pressed="${s.swapKind === 'peer'}">跟同事互調</button></div>
+      ${s.swapKind === 'peer' ? `<label class="f" style="margin-top:8px">同事姓名<input type="text" id="peerName" value="${esc(s.peer)}" placeholder="例如：阿明"></label>` : ''}
+      <p class="note">選同月份裡一個${base ? '原本休假' : '原本上班'}的日子交換：</p>
+      <div class="picks">${cand.map(o => `<button data-pick="${o}" aria-pressed="${s.pick === o}">${fmtMD(o)} ${WD[C.dow(o)]}</button>`).join('') || '<span class="empty">本月沒有可以交換的日子</span>'}</div>
+      ${err ? `<div class="flag">${esc(err)}</div>` : ''}
+      <div class="btns" style="margin-top:10px"><button class="btn main" data-act="swapok" ${!s.pick || err || (s.swapKind === 'peer' && !s.peer.trim()) ? 'disabled' : ''}>確認調班</button><button class="btn ghost" data-act="swapcancel">取消</button></div>`;
+  }
+  const ots = (x.ot || []).map(e => `<div class="row"><div class="l">${e.kind === 'rest' ? '休息日加班 ×2' : `工作日加班 ×${S.rates.workday}`} <span class="chip ${e.kind === 'rest' ? 'ok' : 'warn'}">${e.kind === 'rest' ? '已驗證' : '倍率未驗證'}</span>${e.kind === 'rest' && red ? ' <span class="chip warn">假日加班規則未驗證</span>' : ''}</div><div class="r">${hrs(e.hours)} 時 <button class="btn ghost" style="padding:4px 9px" data-act="delot" data-id="${e.id}" aria-label="刪除">✕</button></div></div>`).join('');
+  const lvs = (x.leave || []).map(e => `<div class="row"><div class="l">${lvDot(e.type)}${esc(LT[e.type].name)} <span class="chip ${LT[e.type].verified ? 'ok' : 'warn'}">${(leaveRates()[e.type] === 0 ? '不扣薪' : leaveRates()[e.type] === 1 ? '全扣' : '扣 ' + leaveRates()[e.type] * 100 + '%')}${LT[e.type].verified ? '' : '・未驗證'}</span></div><div class="r">${hrs(e.hours)} 時 <button class="btn ghost" style="padding:4px 9px" data-act="dellv" data-id="${e.id}" aria-label="刪除">✕</button></div></div>`).join('');
+  const photos = (x.photos || []).map(id => `<div class="ph"><img src="${photoCache[id] || ''}" alt="日誌照片" data-view="${id}"><button data-act="delph" data-id="${id}" aria-label="刪除照片">✕</button></div>`).join('');
+  const rems = (x.reminders || []).map(r => `<div class="row"><div class="l"><b class="num">${esc(r.time)}</b> ${esc(r.title)}</div><div class="r"><button class="btn ghost" style="padding:4px 9px" data-act="ics" data-id="${r.id}">加入行事曆</button> <button class="btn ghost" style="padding:4px 9px" data-act="delrem" data-id="${r.id}" aria-label="刪除提醒">✕</button></div></div>`).join('');
+  return `<div class="grab"></div>
+  <div class="sh-head"><div><div class="sh-date">${+d.slice(5, 7)}/${+d.slice(8)} <span style="font-size:18px" class="muted">週${WD[C.dow(d)]}</span></div>
+    <div class="btns" style="margin-top:6px"><span class="status ${w ? 'w' : 'o'}">${w ? '上班 07:20–19:20' : '休假'}</span>${sw ? `<span class="chip e3">${C.swapLabel(d, sw)}</span>` : ''}</div></div>
+    <button class="iconbtn" data-act="close" aria-label="關閉">✕</button></div>
+  <div class="btns" style="margin-top:8px">${hs.map(h => `<span class="chip ${h.kind === 'makeup' ? '' : 'red'}">${esc(h.name)}${h.kind === 'company' ? '・公司假日' : h.kind === 'makeup' ? '・補假（推算）' : ''}</span>`).join('')}${pd ? `<span class="chip gold">發薪日・${+C.ymAdd(d.slice(0, 7), -1).slice(5)}月薪資</span>` : ''}</div>
+  <div class="who">${C.TEAMS.map((t, i) => `<span class="t${i + 1} ${(t === 'E3' ? w : C.baseWork(t, d)) ? 'on' : ''}">${t} ${(t === 'E3' ? w : C.baseWork(t, d)) ? '上' : '休'}</span>`).join('')}</div>
+  ${h1 > 0 ? `<div class="flag okbox">${day(d).typhoon && !red ? '颱風假' : '假日'}照常上班：加發一倍 ${hrs(h1)} 小時（已驗證）</div>` : ''}
+
+  <h3>調班</h3><div class="card">${swapHtml}</div>
+
+  <h3>加班</h3><div class="card">${ots || '<div class="empty">沒有加班紀錄</div>'}
+    <div class="grid2" style="margin-top:8px;align-items:end"><label class="f">核准計費時數<input type="number" id="otH" inputmode="decimal" step="0.5" min="0.5" value="${w ? 2 : 10}"></label>
+    <button class="btn main" data-act="addot">加入${w ? '工作日' : '休息日'}加班</button></div>
+    <p class="note">以公司核准的計費時數為準，不用打卡時間推算。${w ? '工作日加班倍率還沒有薪資單可以驗證。' : '休息日加班每筆 ×2、各自無條件進位。'}</p></div>
+
+  <h3>請假</h3><div class="card">${lvs || '<div class="empty">沒有請假紀錄</div>'}
+    <div class="grid2" style="margin-top:8px"><label class="f">假別<select id="lvT">${C.LEAVE_TYPES.map(t => `<option value="${t.key}">${t.name}</option>`).join('')}</select></label>
+    <label class="f">時數（1 天 = 10）<input type="number" id="lvH" inputmode="decimal" step="0.5" min="0.5" value="10"></label></div>
+    <div class="btns" style="margin-top:8px"><button class="btn main" data-act="addlv">加入請假</button></div></div>
+
+  <h3>颱風假</h3><div class="card"><label class="row" style="cursor:pointer"><span class="l">這天公司宣布颱風假<div class="small muted">照常上班的話，會加發一倍</div></span><input type="checkbox" id="typh" ${x.typhoon ? 'checked' : ''} style="width:24px;height:24px"></label></div>
+
+  <h3>日誌</h3><div class="card">
+    <label class="f">今天記一下<textarea id="note" placeholder="例如：機台換線、跟阿明換班、晚餐吃牛肉麵">${esc(x.note || '')}</textarea></label>
+    <div class="photos">${photos}${(x.photos || []).length < 5 ? `<label class="addph" style="display:grid;place-items:center;cursor:pointer" aria-label="加入照片">＋<input type="file" id="phIn" accept="image/*" multiple class="vh"></label>` : ''}</div>
+    <p class="note">照片最多 5 張，會先壓縮再存。</p>
+    <h3 style="margin-top:12px">提醒</h3>${rems || '<div class="empty">沒有提醒</div>'}
+    <div class="grid2" style="margin-top:6px"><label class="f">時間<input type="time" id="remT" value="09:00"></label><label class="f">要提醒什麼<input type="text" id="remTitle" placeholder="例如：繳宿舍費"></label></div>
+    <div class="btns" style="margin-top:8px"><button class="btn main" data-act="addrem">加入提醒</button></div>
+    <p class="note">提醒會做成行事曆檔，交給 iPhone 行事曆準時通知。</p></div>`;
+}
+
+/* ---------- 小算盤 ---------- */
+const Calcu = { ex: '', res: '0', done: false };
+function calcEval(ex) {
+  const toks = ex.match(/\d*\.?\d+|[+\-×÷%]/g) || [];
+  const out = [], ops = [], prec = { '+': 1, '-': 1, '×': 2, '÷': 2 };
+  let prevNum = false;
+  for (const t of toks) {
+    if (/\d/.test(t)) { out.push(parseFloat(t)); prevNum = true; }
+    else if (t === '%') { if (out.length) out.push(out.pop() / 100); }
+    else { if (!prevNum && t === '-') { out.push(0); } while (ops.length && prec[ops[ops.length - 1]] >= prec[t]) out.push(ops.pop()); ops.push(t); prevNum = false; }
+  }
+  while (ops.length) out.push(ops.pop());
+  const st = [];
+  for (const t of out) { if (typeof t === 'number') st.push(t); else { const b = st.pop(), a = st.pop(); if (a == null || b == null) return NaN; st.push(t === '+' ? a + b : t === '-' ? a - b : t === '×' ? a * b : a / b); } }
+  return st.length === 1 ? st[0] : NaN;
+}
+const fmtCalc = v => !isFinite(v) ? '錯誤' : (Math.abs(v) >= 1e12 ? v.toExponential(6) : (+v.toPrecision(12)).toLocaleString('en-US', { maximumFractionDigits: 10 }));
+function calcKey(k) {
+  const last = Calcu.ex.slice(-1);
+  if (k === 'C') { Calcu.ex = ''; Calcu.res = '0'; Calcu.done = false; }
+  else if (k === '⌫') { Calcu.ex = Calcu.ex.slice(0, -1); Calcu.done = false; }
+  else if (k === '=') { const v = calcEval(Calcu.ex); Calcu.res = fmtCalc(v); if (isFinite(v)) { Calcu.ex = String(+v.toPrecision(12)); Calcu.done = true; } }
+  else if ('+-×÷'.includes(k)) { Calcu.done = false; if (/[+\-×÷]$/.test(Calcu.ex)) Calcu.ex = Calcu.ex.slice(0, -1) + k; else if (Calcu.ex || k === '-') Calcu.ex += k; }
+  else if (k === '%') { if (/[\d.]$/.test(Calcu.ex)) Calcu.ex += '%'; }
+  else if (k === '.') { if (Calcu.done) { Calcu.ex = ''; Calcu.done = false; } const seg = Calcu.ex.split(/[+\-×÷]/).pop(); if (!seg.includes('.')) Calcu.ex += (seg === '' ? '0.' : '.'); }
+  else { if (Calcu.done) { Calcu.ex = ''; Calcu.done = false; } if (last === '%') Calcu.ex += '×'; Calcu.ex += k; }
+  if (k !== '=' && k !== 'C') { const v = calcEval(Calcu.ex); if (isFinite(v) && Calcu.ex) Calcu.res = fmtCalc(v); }
+  renderSheet();
+}
+function renderCalcSheet() {
+  const keys = [['C', 'fn'], ['⌫', 'fn'], ['%', 'fn'], ['÷', 'op'], ['7'], ['8'], ['9'], ['×', 'op'], ['4'], ['5'], ['6'], ['-', 'op'], ['1'], ['2'], ['3'], ['+', 'op'], ['0', 'zero'], ['.'], ['=', 'eq']];
+  return `<div class="grab"></div><div class="sh-head"><h2 style="margin:0">小算盤</h2><button class="iconbtn" data-act="close" aria-label="關閉">✕</button></div>
+  <div class="calc-disp" style="margin-top:10px"><div class="ex">${esc(Calcu.ex.replace(/-/g, '−')) || '&nbsp;'}</div><div class="rs" aria-live="polite">${esc(Calcu.res)}</div></div>
+  <div class="keys">${keys.map(([k, c]) => `<button class="${c || ''}" data-key="${k}">${k === '-' ? '−' : k}</button>`).join('')}</div>
+  <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="copycalc">複製結果</button></div>`;
+}
+
+/* ---------- 薪資 ---------- */
+function field(group, k, label, val, ym) {
+  return `<label class="f">${label}<input type="number" inputmode="numeric" data-pf="${group}.${k}" data-ym="${ym}" value="${val ?? 0}"></label>`;
+}
+function renderPay() {
+  const ym = UI.payYm, mp = monthPay(ym), rec = mp.rec;
+  const pd = C.payday(ym, S.holidayEdits);
+  const diff = mp.actual != null && mp.actual !== '' ? mp.net - +mp.actual : null;
+  const otRows = mp.ot.map(e => `<div class="row"><div class="l">${fmtMD(e.date)} ${e.kind === 'rest' ? '休息日' : '工作日'} ${hrs(e.hours)} 時 ×${e.mult}${e.kind === 'rest' ? '' : ' <span class="chip warn">未驗證</span>'}</div><div class="r">${money(e.amount)}</div></div>`).join('');
+  const h1Rows = mp.h1.map(e => `<div class="row"><div class="l">${fmtMD(e.date)} ${esc(e.why || '')} 一倍 ${hrs(e.hours)} 時</div><div class="r">${money(e.amount)}</div></div>`).join('');
+  const lvRows = mp.leave.map(e => `<div class="row"><div class="l">${fmtMD(e.date)} ${esc(LT[e.type].name)} ${hrs(e.hours)} 時${e.rate ? ` ×${e.rate}` : ''}${LT[e.type].verified ? '' : ' <span class="chip warn">未驗證</span>'}</div><div class="r">${e.amount ? '−' + money(e.amount) : '不扣'}</div></div>`).join('');
+  const F = C.PAY_FIELDS;
+  return `${!+rec.fixed.base ? '<div class="flag">還沒有薪資資料。到「更多 → 備份」匯入個人資料檔，或在下面的「本月薪資設定」自己填。</div>' : ''}${mp.from ? `<div class="flag">這個月還沒有自己的薪資設定，數字沿用 ${mp.from.replace('-', '/')}。改任何一格就會存成本月的設定。</div>` : ''}
+  <div class="card" style="margin-top:10px">
+    <div class="small muted" style="font-weight:700">${+ym.slice(5)}月薪資・${fmtFull(pd)} 發放</div>
+    <div class="big" style="margin-top:4px">${money(mp.net)}<span style="font-size:16px" class="muted"> 元</span></div>
+    <div class="small muted">${mp.actual != null && mp.actual !== '' ? '試算實發' : '預估實發（D 代扣以手動輸入為準）'}</div>
+    ${diff != null ? (diff === 0 ? '<div class="flag okbox">✓ 跟薪資單實發一模一樣</div>' : `<div class="flag">跟薪資單差 ${money(diff)} 元，請檢查加班、請假或代扣有沒有漏記</div>`) : ''}
+    ${mp.over46 ? `<div class="flag">本月加班 ${hrs(mp.otHours)} 小時，超過 46 小時。超過的部分可能要轉成應稅，這條規則還沒有薪資單可以驗證，目前全部列在免稅。</div>` : ''}
+    <div style="margin-top:10px">
+      <div class="row"><div class="l">A 應稅加項</div><div class="r">${money(mp.A)}</div></div>
+      <div class="row"><div class="l">B 免稅加項</div><div class="r">${money(mp.B)}</div></div>
+      <div class="row"><div class="l">C 請假扣款</div><div class="r">${mp.C ? '−' + money(mp.C) : '0'}</div></div>
+      <div class="row"><div class="l">D 稅後代扣</div><div class="r">${mp.D ? '−' + money(mp.D) : '0'}</div></div>
+      <div class="row"><div class="l"><b>應付 A+B</b></div><div class="r">${money(mp.gross)}</div></div>
+    </div>
+    <label class="f" style="margin-top:10px">薪資單上的實發（拿到薪資單後填，用來對帳）<input type="number" inputmode="numeric" id="actual" data-ym="${ym}" value="${mp.actual ?? ''}" placeholder="照薪資單上的金額填"></label>
+  </div>
+
+  <h3>算給你看</h3><div class="card">
+    <div class="row"><div class="l">A1 基礎應稅<div class="small muted">本薪＋各項津貼＋考績</div></div><div class="r">${money(mp.A1)}</div></div>
+    <div class="row"><div class="l">A2 班制津貼<div class="small muted">(A1＋B)÷240×2×50，四捨五入</div></div><div class="r">${money(mp.A2)}</div></div>
+    <div class="row"><div class="l">加班時薪<div class="small muted">(A1＋A2＋B)÷240</div></div><div class="r">${mp.otRate.toFixed(4)}</div></div>
+    <div class="row"><div class="l">請假時薪<div class="small muted">(A1＋B)÷240</div></div><div class="r">${mp.leaveRate.toFixed(4)}</div></div>
+    ${mp.cashout ? `<div class="row"><div class="l">未休特休折現 ${hrs(mp.cashoutHours)} 時 <span class="chip warn">進位未驗證</span></div><div class="r">${money(mp.cashout)}</div></div>` : ''}
+  </div>
+
+  <h3>加班費（免稅）${money(mp.otSum + mp.h1Sum)} 元</h3><div class="card">${otRows + h1Rows || '<div class="empty">本月沒有加班。在班表點一天就能加。</div>'}</div>
+  <h3>請假扣款 ${money(mp.C)} 元</h3><div class="card">${lvRows || '<div class="empty">本月沒有請假。</div>'}</div>
+
+  <h3>本月薪資設定</h3>
+  <div class="stack">
+  <details class="card"><summary>固定項目</summary><div class="grid2">${F.fixed.map(([k, n]) => field('fixed', k, n, rec.fixed[k], ym)).join('')}</div></details>
+  <details class="card"><summary>變動項目（考績、伙食）</summary><div class="grid2">${F.variable.map(([k, n, t]) => field('variable', k, n + (t ? `（${t}）` : ''), rec.variable[k], ym)).join('')}</div></details>
+  <details class="card"><summary>D 稅後代扣（照薪資單填）</summary><div class="grid2">${F.deduct.map(([k, n]) => field('deduct', k, n, rec.deduct[k], ym)).join('')}</div>
+    <p class="note">這些每個月都會變，App 不自己推算。下個月會先帶入這個月的數字。</p></details>
+  </div>`;
+}
+
+/* ---------- 假勤 ---------- */
+function renderLeave() {
+  const y = UI.leaveYear;
+  const now = ledgerAt(today);
+  const ent = allLeave();
+  const curYm = today.slice(0, 7);
+  const rows = C.LEAVE_TYPES.map(t => {
+    const yr = ent.filter(e => e.type === t.key && e.date.startsWith(y + '-')).reduce((s, e) => s + +e.hours, 0);
+    const mo = ent.filter(e => e.type === t.key && e.date.startsWith(curYm)).reduce((s, e) => s + +e.hours, 0);
+    const lim = C.LEAVE_LIMIT_DAYS[t.key];
+    const over = lim && yr / 10 > lim;
+    return `<div class="row"><div class="l">${lvDot(t.key)}<b>${t.name}</b> <span class="chip ${t.verified ? 'ok' : 'warn'}">${leaveRates()[t.key] === 0 ? '不扣薪' : leaveRates()[t.key] === 1 ? '全扣' : '扣 ' + leaveRates()[t.key] * 100 + '%'}${t.verified ? '' : '・未驗證'}</span>
+      ${lim ? `<div class="small ${over ? '' : 'muted'}" ${over ? 'style="color:var(--red);font-weight:700"' : ''}>勞基法上限 ${lim} 天${over ? '，已超過' : ''}</div>` : ''}</div>
+      <div class="r">${hrs(yr)} 時<div class="small muted">${hrs(yr / 10)} 天・本月 ${hrs(mo)} 時</div></div></div>`;
+  }).join('');
+  const list = ent.filter(e => e.date.startsWith(y + '-')).sort((a, b) => a.date < b.date ? 1 : -1)
+    .map(e => `<button class="row" style="width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left" data-day="${e.date}"><span class="l">${lvDot(e.type)}${fmtFull(e.date)} ${esc(LT[e.type].name)}</span><span class="r">${hrs(e.hours)} 時</span></button>`).join('');
+  const nextY = +today.slice(0, 4) + 1;
+  return `<div class="stats" style="margin-top:4px">
+      <div class="stat"><small>當年度特休</small><b>${hrs(now.current)}</b> <em>小時</em></div>
+      <div class="stat"><small>遞延特休</small><b>${hrs(now.deferred)}</b> <em>小時・先扣這裡</em></div>
+      <div class="stat"><small>補休</small><b>${hrs(now.comp)}</b> <em>小時</em></div>
+      <div class="stat hot"><small>${nextY}/1/1 發放</small><b>${C.grant(nextY)}</b> <em>小時・上限 240</em></div></div>
+    ${now.current < 0 || now.deferred < 0 ? '<div class="flag">特休餘額是負的，請檢查請假紀錄或起始餘額。</div>' : ''}
+    <p class="note">餘額以今天 ${fmtMD(today)} 為準。年底沒休完的當年度特休會轉成遞延；遞延再沒休完，會在隔年 1 月薪資折現。</p>
+    <div class="bar" style="margin-top:14px"><h2 style="margin:0">${y} 年請假統計</h2><div class="btns"><button class="iconbtn" data-ly="-1" aria-label="前一年">‹</button><button class="iconbtn" data-ly="1" aria-label="後一年">›</button></div></div>
+    <div class="card">${rows}</div>
+    <h3>${y} 年請假紀錄</h3><div class="card">${list || '<div class="empty">這一年沒有請假紀錄。在班表點一天就能加。</div>'}</div>`;
+}
+
+/* ---------- 日誌 ---------- */
+function renderDiary() {
+  const q = (UI.q || '').trim();
+  const items = Object.entries(S.days).filter(([d, x]) => x.note || (x.photos || []).length || (x.reminders || []).length)
+    .filter(([d, x]) => !q || (x.note || '').includes(q) || (x.reminders || []).some(r => r.title.includes(q)))
+    .sort((a, b) => a[0] < b[0] ? 1 : -1);
+  return `<label class="f"><span class="small">搜尋日誌</span><input type="text" id="q" value="${esc(q)}" placeholder="輸入關鍵字"></label>
+  <div class="btns" style="margin-top:10px"><button class="btn main" data-day="${today}">寫今天的日誌</button></div>
+  <div class="stack" style="margin-top:12px">${items.map(([d, x]) => `<button class="card" style="text-align:left" data-day="${d}">
+    <div class="small muted" style="font-weight:700">${fmtFull(d)} · ${isWork(d) ? '上班' : '休假'}</div>
+    ${x.note ? `<div style="margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(x.note.length > 120 ? x.note.slice(0, 120) + '…' : x.note)}</div>` : ''}
+    ${(x.reminders || []).map(r => `<div class="small" style="margin-top:4px">⏰ <span class="num">${esc(r.time)}</span> ${esc(r.title)}</div>`).join('')}
+    ${(x.photos || []).length ? `<div class="photos">${x.photos.map(id => `<div class="ph"><img src="${photoCache[id] || ''}" alt="日誌照片"></div>`).join('')}</div>` : ''}
+  </button>`).join('') || '<div class="empty">還沒有日誌。點班表上任何一天，就能寫字、放照片、設提醒。</div>'}</div>`;
+}
+
+/* ---------- 更多 ---------- */
+let testResults = null, importMsg = '';
+function renderMore() {
+  const hl = C.holidayList(UI.hlYear, S.holidayEdits);
+  const th = S.theme;
+  return `<h3>外觀</h3><div class="card"><div class="seg" role="group" aria-label="外觀"><button data-theme-set="auto" aria-pressed="${th === 'auto'}">跟著手機</button><button data-theme-set="light" aria-pressed="${th === 'light'}">淺色</button><button data-theme-set="dark" aria-pressed="${th === 'dark'}">深色</button></div></div>
+
+  <h3>特休起始餘額</h3><div class="card"><div class="grid2">
+    <label class="f">以這天結束時為準<input type="date" data-st="date" value="${S.start.date}"></label>
+    <label class="f">當年度特休（小時）<input type="number" inputmode="decimal" step="0.5" data-st="current" value="${S.start.current}"></label>
+    <label class="f">遞延特休（小時）<input type="number" inputmode="decimal" step="0.5" data-st="deferred" value="${S.start.deferred}"></label>
+    <label class="f">補休（小時）<input type="number" inputmode="decimal" step="0.5" data-st="comp" value="${S.start.comp}"></label></div>
+    <p class="note">這天之後的請假才會扣餘額。</p></div>
+
+  <h3>扣薪倍率</h3><div class="card">${C.LEAVE_TYPES.map(t => `<div class="row"><div class="l">${t.name} <span class="chip ${t.verified ? 'ok' : 'warn'}">${t.verified ? '已驗證' : '未驗證'}</span></div><div class="r" style="width:96px"><input type="number" step="0.1" min="0" max="1" data-rate="${t.key}" value="${leaveRates()[t.key]}" aria-label="${t.name}扣薪倍率"></div></div>`).join('')}
+    <div class="row"><div class="l">工作日加班倍率 <span class="chip warn">未驗證</span><div class="small muted">下班後加班；休息日 ×2 已驗證、不能改</div></div><div class="r" style="width:96px"><input type="number" step="0.01" min="0" data-wrate value="${S.rates.workday}" aria-label="工作日加班倍率"></div></div>
+    <p class="note">1 代表全扣、0.5 代表扣一半、0 代表不扣。等真的請過、拿薪資單對過，再確認。</p></div>
+
+  <h3>假日清單</h3><div class="card hl-list">
+    <div class="bar"><b class="num" style="font-size:20px">${UI.hlYear}</b><div class="btns"><button class="iconbtn" data-hy="-1" aria-label="前一年">‹</button><button class="iconbtn" data-hy="1" aria-label="後一年">›</button></div></div>
+    ${hl.map(h => `<div class="row"><div class="l"><span class="num">${fmtFull(h.date)}</span> ${esc(h.name)}<div class="small muted">${h.kind === 'national' ? '國定假日' : h.kind === 'company' ? '公司假日' : '補假（只影響發薪日）'}${h.edited ? '・已手動修改' : ''}</div></div>
+      <div class="r">${h.edited ? `<button class="btn ghost" style="padding:4px 9px" data-hreset="${h.date}">還原</button>` : ''} <button class="btn ghost" style="padding:4px 9px" data-hdel="${h.date}|${esc(h.name)}" aria-label="刪除">✕</button></div></div>`).join('')}
+    ${Object.entries(S.holidayEdits).filter(([d, v]) => d.startsWith(UI.hlYear + '-') && !v.length).map(([d]) => `<div class="row"><div class="l muted">${fmtFull(d)} 已刪除</div><div class="r"><button class="btn ghost" style="padding:4px 9px" data-hreset="${d}">還原</button></div></div>`).join('')}
+    <div class="grid3" style="margin-top:10px"><label class="f">日期<input type="date" id="hD" min="2026-01-01" max="2036-12-31"></label><label class="f">名稱<input type="text" id="hN" placeholder="例如：調整放假"></label>
+      <label class="f">類型<select id="hK"><option value="national">國定假日</option><option value="company">公司假日</option><option value="makeup">補假</option></select></label></div>
+    <div class="btns" style="margin-top:8px"><button class="btn main" data-act="hadd">新增假日</button></div>
+    <p class="note">補假和彈性放假是政府每年公布的，這裡的補假是依「週六提前、週日延後」推算。國定假日和公司假日照常上班會加發一倍；補假只用來推算發薪日。</p></div>
+
+  <h3>備份</h3><div class="card">
+    <div class="btns"><button class="btn main" data-act="export">匯出備份</button><button class="btn ghost" data-act="copyexport">複製備份內容</button>
+    <label class="btn ghost" style="cursor:pointer">匯入備份檔<input type="file" id="impFile" accept=".json,application/json" class="vh"></label></div>
+    <label class="f" style="margin-top:10px">或貼上備份內容<textarea id="impText" placeholder='{"v":1, ...}' style="min-height:70px"></textarea></label>
+    <div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="importtext">從貼上的內容還原</button></div>
+    ${importMsg ? `<div class="flag ${importMsg.startsWith('✓') ? 'okbox' : ''}">${esc(importMsg)}</div>` : ''}
+    <p class="note">資料只存在這支手機裡${Store.persistent ? '' : '（目前瀏覽器不允許儲存，關掉頁面後資料會消失，請記得匯出）'}。換手機或刪掉 App 前，記得先匯出。備份包含照片。</p></div>
+
+  <h3>自我檢查</h3><div class="card"><p style="margin:0 0 8px">${runSpecTests(C).length} 項測試：班表、發薪日、調班、特休，以及用虛構薪資驗算的薪資公式。</p>
+    <button class="btn main" data-act="runtests">執行檢查</button>
+    ${testResults ? `<div class="flag ${testResults.every(r => r.ok) ? 'okbox' : ''}">${testResults.filter(r => r.ok).length} / ${testResults.length} 項通過</div>
+      <div style="margin-top:8px">${testResults.map(r => `<div class="testrow"><span>${r.ok ? '✅' : '❌'}</span><div><b>${esc(r.group)}</b> ${esc(r.name)}${r.ok ? '' : `<br><code>得到 ${esc(r.got)}，應為 ${esc(r.want)}</code>`}</div></div>`).join('')}</div>` : ''}
+  </div>
+  <p class="note" style="margin-top:16px">E3 輪班手帳・規則已用實際薪資單與出勤表核對過。</p>`;
+}
+
+/* ---------- 抽屜 ---------- */
+function renderSheet() {
+  const sh = $('#sheet'), sc = $('#scrim');
+  if (!UI.sheet) { sh.hidden = true; sc.hidden = true; document.body.style.overflow = ''; return; }
+  const keep = sh.hidden ? 0 : sh.scrollTop;
+  $('#sheetIn').innerHTML = UI.sheet.kind === 'day' ? renderDaySheet() : renderCalcSheet();
+  sh.hidden = false; sc.hidden = false; document.body.style.overflow = 'hidden';
+  sh.scrollTop = keep;
+}
+function closeSheet() { UI.sheet = null; renderSheet(); render(); }
+
+/* ---------- 主畫面 ---------- */
+function applyTheme() {
+  const r = document.documentElement;
+  if (S.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', S.theme);
+}
+function render() {
+  renderTabs(); renderTop();
+  const v = { calendar: renderCalendar, pay: renderPay, leave: renderLeave, diary: renderDiary, more: renderMore }[UI.tab]();
+  $('#view').innerHTML = v;
+}
+
+/* ---------- 事件 ---------- */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button, [data-view]'); if (!t) { if (e.target.id === 'scrim') closeSheet(); return; }
+  const ds = t.dataset;
+  if (ds.tab) return go(ds.tab);
+  if (ds.nav != null) { UI.ym = ds.nav === '0' ? clampYm(today.slice(0, 7)) : clampYm(C.ymAdd(UI.ym, +ds.nav)); return render(); }
+  if (ds.pnav != null) { UI.payYm = ds.pnav === '0' ? clampYm(today.slice(0, 7)) : clampYm(C.ymAdd(UI.payYm, +ds.pnav)); return render(); }
+  if (ds.mode) { S.mode = ds.mode; save(); return render(); }
+  if (ds.go) { if (ds.payym) UI.payYm = ds.payym; return go(ds.go); }
+  if (ds.day && !UI.sheet) return openDay(ds.day);
+  if (ds.ly) { UI.leaveYear += +ds.ly; return render(); }
+  if (ds.hy) { UI.hlYear = Math.max(2026, Math.min(2036, UI.hlYear + +ds.hy)); return render(); }
+  if (ds.themeSet) { S.theme = ds.themeSet; applyTheme(); save(); return render(); }
+  if (ds.hreset) { delete S.holidayEdits[ds.hreset]; save(); return render(); }
+  if (ds.hdel) { const [d, n] = ds.hdel.split('|'); S.holidayEdits[d] = C.holidaysOn(d, S.holidayEdits).filter(h => h.name !== n); save(); return render(); }
+  if (ds.key) return calcKey(ds.key);
+  if (ds.view) { const v = $('#viewer'); v.innerHTML = `<img src="${photoCache[ds.view]}" alt="日誌照片">`; v.hidden = false; return; }
+  if (ds.swk) { UI.sheet.swapKind = ds.swk; return renderSheet(); }
+  if (ds.pick) { UI.sheet.pick = ds.pick; return renderSheet(); }
+  const act = ds.act; if (!act) return;
+  const s = UI.sheet, d = s && s.d;
+  switch (act) {
+    case 'close': return closeSheet();
+    case 'swapopen': s.swapOpen = true; return renderSheet();
+    case 'swapcancel': s.swapOpen = false; s.pick = null; return renderSheet();
+    case 'swapok': {
+      const err = C.validateSwap(S.swaps, d, s.pick); if (err) return toast(err);
+      S.swaps.push({ id: uid(), kind: s.swapKind, peer: s.swapKind === 'peer' ? s.peer.trim() : '', ...C.orderSwap(d, s.pick) });
+      s.swapOpen = false; s.pick = null; save(); toast('已調班'); return renderSheet();
+    }
+    case 'unswap': S.swaps = S.swaps.filter(x => x.id !== ds.id); save(); toast('已取消調班，兩天都還原了'); return renderSheet();
+    case 'addot': {
+      const h = parseFloat($('#otH').value); if (!(h > 0)) return toast('請填加班時數');
+      (dayW(d).ot = day(d).ot || []).push({ id: uid(), kind: isWork(d) ? 'workday' : 'rest', hours: h }); save(); return renderSheet();
+    }
+    case 'delot': dayW(d).ot = day(d).ot.filter(x => x.id !== ds.id); tidyDay(d); save(); return renderSheet();
+    case 'addlv': {
+      const h = parseFloat($('#lvH').value); if (!(h > 0)) return toast('請填請假時數');
+      (dayW(d).leave = day(d).leave || []).push({ id: uid(), type: $('#lvT').value, hours: h }); save(); return renderSheet();
+    }
+    case 'dellv': dayW(d).leave = day(d).leave.filter(x => x.id !== ds.id); tidyDay(d); save(); return renderSheet();
+    case 'delph': { dayW(d).photos = day(d).photos.filter(x => x !== ds.id); Store.del('photo:' + ds.id); delete photoCache[ds.id]; tidyDay(d); save(); return renderSheet(); }
+    case 'addrem': {
+      const title = $('#remTitle').value.trim(), time = $('#remT').value; if (!title || !time) return toast('請填時間和提醒內容');
+      (dayW(d).reminders = day(d).reminders || []).push({ id: uid(), time, title }); save(); return renderSheet();
+    }
+    case 'delrem': dayW(d).reminders = day(d).reminders.filter(x => x.id !== ds.id); tidyDay(d); save(); return renderSheet();
+    case 'ics': {
+      const r = (day(d).reminders || []).find(x => x.id === ds.id); if (!r) return;
+      const ics = makeIcs(d, r); await tryDownload(`提醒-${d}.ics`, ics, 'text/calendar'); return;
+    }
+    case 'copycalc': return copyText(Calcu.res.replace(/,/g, ''), '已複製結果');
+    case 'hadd': {
+      const hd = $('#hD').value, hn = $('#hN').value.trim(), hk = $('#hK').value;
+      if (!hd || !hn) return toast('請填日期和名稱');
+      S.holidayEdits[hd] = [...C.holidaysOn(hd, S.holidayEdits), { name: hn, kind: hk }]; UI.hlYear = +hd.slice(0, 4); save(); toast('已新增'); return render();
+    }
+    case 'export': { const txt = await exportText(); await tryDownload(`輪班手帳備份-${today}.json`, txt, 'application/json'); return; }
+    case 'copyexport': return copyText(await exportText(), '已複製備份內容');
+    case 'importtext': return importData($('#impText').value);
+    case 'runtests': testResults = runSpecTests(C); return render();
+  }
+});
+$('#viewer').addEventListener('click', () => { $('#viewer').hidden = true; });
+$('#scrim').addEventListener('click', closeSheet);
+$('#fab').addEventListener('click', () => { UI.sheet = { kind: 'calc' }; renderSheet(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && UI.sheet) closeSheet();
+  if (UI.sheet && UI.sheet.kind === 'calc') { const m = { '*': '×', '/': '÷', Enter: '=', Backspace: '⌫', Escape: null }; const k = m[e.key] !== undefined ? m[e.key] : e.key; if (k && /^[0-9.+\-×÷%=⌫]$/.test(k)) { e.preventDefault(); calcKey(k); } }
+});
+document.addEventListener('input', e => {
+  const t = e.target, ds = t.dataset;
+  if (t.id === 'peerName') { UI.sheet.peer = t.value; const b = document.querySelector('[data-act="swapok"]'); if (b) b.disabled = !UI.sheet.pick || !!C.validateSwap(S.swaps, UI.sheet.d, UI.sheet.pick) || !t.value.trim(); return; }
+  if (t.id === 'note') { const d = UI.sheet.d; dayW(d).note = t.value; tidyDay(d); save(); return; }
+  if (t.id === 'q') { UI.q = t.value; const pos = t.selectionStart; render(); const n = $('#q'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } return; }
+});
+document.addEventListener('change', async e => {
+  const t = e.target, ds = t.dataset;
+  if (ds.pf) { const [g, k] = ds.pf.split('.'); const rec = ensurePayMonth(ds.ym); rec[g][k] = +t.value || 0; save(); return render(); }
+  if (t.id === 'actual') { const rec = ensurePayMonth(t.dataset.ym); rec.actual = t.value === '' ? null : +t.value; save(); return render(); }
+  if (t.id === 'typh') { const d = UI.sheet.d; dayW(d).typhoon = t.checked; tidyDay(d); save(); return renderSheet(); }
+  if (ds.st) { S.start[ds.st] = ds.st === 'date' ? t.value : +t.value || 0; save(); return; }
+  if (ds.rate) { const v = parseFloat(t.value); if (v >= 0 && v <= 1) S.rates.leave[ds.rate] = v; save(); return; }
+  if ('wrate' in ds) { const v = parseFloat(t.value); if (v > 0) S.rates.workday = v; save(); return; }
+  if (t.id === 'phIn') {
+    const d = UI.sheet.d; const cur = day(d).photos || []; const files = [...t.files].slice(0, 5 - cur.length);
+    if (t.files.length > files.length) toast('每天最多 5 張照片');
+    for (const f of files) { try { const url = await compress(f); const id = uid(); photoCache[id] = url; await Store.set('photo:' + id, url); (dayW(d).photos = day(d).photos || []).push(id); } catch (err) { toast('有一張照片讀不出來，換一張試試'); } }
+    save(); return renderSheet();
+  }
+  if (t.id === 'impFile' && t.files[0]) { const txt = await t.files[0].text(); return importData(txt); }
+});
+
+/* ---------- 照片、行事曆、備份 ---------- */
+function compress(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      let q = 0.82, out = cv.toDataURL('image/jpeg', q);
+      while (out.length > 420000 && q > 0.45) { q -= 0.1; out = cv.toDataURL('image/jpeg', q); }
+      res(out);
+    };
+    img.onerror = rej; img.src = url;
+  });
+}
+function makeIcs(d, r) {
+  const [hh, mm] = r.time.split(':').map(Number);
+  const start = new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8), hh - 8, mm));
+  const end = new Date(start.getTime() + 30 * 60000);
+  const f = x => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const txt = s => s.replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//E3 Shift Book//TW', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT', `UID:${r.id}@e3-shift-book`, `DTSTAMP:${f(new Date())}`,
+    `DTSTART:${f(start)}`, `DTEND:${f(end)}`, `SUMMARY:${txt(r.title)}`, 'BEGIN:VALARM', 'TRIGGER:PT0M', 'ACTION:DISPLAY', `DESCRIPTION:${txt(r.title)}`, 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+}
+async function exportText() {
+  const ids = Object.values(S.days).flatMap(x => x.photos || []);
+  const photos = {};
+  for (const id of ids) photos[id] = photoCache[id] || await Store.get('photo:' + id) || null;
+  return JSON.stringify({ app: 'e3-shift-book', exportedAt: new Date().toISOString(), state: S, photos });
+}
+async function importData(txt) {
+  try {
+    const o = JSON.parse(txt);
+    const st = o.state || o; if (!st || st.v !== 1 || !st.days || !st.start) throw new Error('格式');
+    S = Object.assign(SEED(), st, { rates: Object.assign({ workday: 1, leave: {} }, st.rates || {}) });
+    for (const [id, url] of Object.entries(o.photos || {})) if (url) { photoCache[id] = url; await Store.set('photo:' + id, url); }
+    await Store.set('state', JSON.parse(JSON.stringify(S)));
+    importMsg = '✓ 已還原備份'; applyTheme(); render();
+  } catch (err) { importMsg = '這不是輪班手帳的備份內容，請確認貼上的是完整的匯出內容。'; render(); }
+}
+
+/* ---------- 啟動 ---------- */
+(async () => {
+  const h = (location.hash || '').slice(1); if (TABS.some(([k]) => k === h)) UI.tab = h;
+  applyTheme(); render();
+  await Store.open();
+  try {
+    const saved = await Store.get('state');
+    if (saved && saved.v === 1) { S = Object.assign(SEED(), saved); S.rates = Object.assign({ workday: 1, leave: {} }, saved.rates || {}); }
+    else await Store.set('state', JSON.parse(JSON.stringify(S)));
+    const ks = (await Store.keys()) || [];
+    for (const k of ks) if (String(k).startsWith('photo:')) photoCache[k.slice(6)] = await Store.get(k);
+  } catch (e) { }
+  applyTheme(); render();
+})();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>
